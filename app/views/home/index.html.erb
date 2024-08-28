@@ -1,0 +1,66 @@
+<h1>Ryan's classic book store</h1>
+<h2>Built using Ruby on Rails for the frontend and Golang/Gin API talking to a cloud hosted postgresql database for the backend!</h2>
+<h5>
+    While this implementation is over-complicated and the rails app could talk to the postgres database directly, it was built to showcase the 
+    use of Golang/Gin on the backend and how to implement a RESTful API!
+</h5>
+
+<% if $access_token == nil %>
+    <h3>Login to purchase books</h3>
+    <div id="login">
+        <%= form_tag '/login' do %>
+            <%= text_field_tag :username %>
+            <%= password_field_tag :password %>
+        <%= submit_tag 'Login' %>
+        <% end %>
+        <span style="color: red;"><%= $loginerror %></span>
+    </div>
+    <h3>Don't have an account? Sign up!</h3>
+    <div id="signup">
+        <%= form_tag '/signup' do %>
+            <%= text_field_tag :username %>
+            <%= password_field_tag :password %>
+        <%= submit_tag 'Signup' %>
+        <% end %>
+        <span style="color: red;"><%= $signuperror %></span>
+    </div>
+<% end %>
+
+<% if $access_token != nil %>
+    <h2>Welcome, <%= $username %></h2>
+    <!--TODO: add logout button-->
+    <%= button_to 'Logout', '/logout', method: :get %>
+    <span style="color: red;"><%= $logouterror %></span>
+    <%= button_to 'Delete Account', '/deleteaccount', method: :delete %>
+    <span style="color: red;"><%= $deleteaccounterror %></span>
+
+    <h3>You currently have $<%= $usercash %> available to spend!</h3>
+    <h4>Add more cash to your account</h4>
+    <%= button_to 'Add Cash ($5)', '/addcash', method: :post, params: { cash: 5 } %>
+    <%= button_to 'Add Cash ($10)', '/addcash', method: :post, params: { cash: 10 } %>
+    <%= button_to 'Add Cash ($20)', '/addcash', method: :post, params: { cash: 20 } %>
+
+    <h3>Your currently purchased books</h3>
+    <span style="color: red;"><%= $returnbookerror %></span>
+    <div id="books">
+        <ul>
+            <% $userbooks.each do |book| %>
+                <li><%= book['Bookname'] %> by <%= book['Authorname'] %></li>
+                <%= button_to 'Return', '/returnbook', method: :post, params: { id: book['Pkbookid'] } %>
+            <% end %>
+        </ul>
+    </div>
+
+    <h3>Books available for purchase</h3>
+    <span style="color: red;"><%= $purchasebookerror %></span>
+    <div id="books">
+        <ul>
+            <% $books.each do |book| %>
+                <li><%= book['Bookname'] %></li>
+                <li><%= book['Authorname'] %></li>
+                <li><%= book['Price'] %></li>
+                <li><%= button_to 'Purchase', '/purchasebook', method: :post, params: { id: book['Pkbookid'] } %></li>
+            <% end %>
+        </ul>
+    </div>
+<% end %>

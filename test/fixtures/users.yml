@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  pkuserid: 1
+  username: MyString
+  password: MyString
+  cash: 1.5
+  accesstoken: MyString
+
+two:
+  pkuserid: 1
+  username: MyString
+  password: MyString
+  cash: 1.5
+  accesstoken: MyString
