@@ -1,66 +1,142 @@
-<h1>Ryan's classic book store</h1>
-<h2>Built using Ruby on Rails for the frontend and Golang/Gin API talking to a cloud hosted postgresql database for the backend!</h2>
-<h5>
-    While this implementation is over-complicated and the rails app could talk to the postgres database directly, it was built to showcase the 
-    use of Golang/Gin on the backend and how to implement a RESTful API!
-</h5>
+<%= stylesheet_link_tag 'bootstrap.css', media: 'all' %>
 
-<% if $access_token == nil %>
-    <h3>Login to purchase books</h3>
-    <div id="login">
-        <%= form_tag '/login' do %>
-            <%= text_field_tag :username %>
-            <%= password_field_tag :password %>
-        <%= submit_tag 'Login' %>
-        <% end %>
-        <span style="color: red;"><%= $loginerror %></span>
-    </div>
-    <h3>Don't have an account? Sign up!</h3>
-    <div id="signup">
-        <%= form_tag '/signup' do %>
-            <%= text_field_tag :username %>
-            <%= password_field_tag :password %>
-        <%= submit_tag 'Signup' %>
-        <% end %>
-        <span style="color: red;"><%= $signuperror %></span>
-    </div>
-<% end %>
+<div class="container-fluid" style="height: 100vh; background-color: #F4F7F9;">
+    <% if $access_token == nil %>
+        <div class="d-flex flex-row justify-content-center align-items-center">
+            <div class="d-flex flex-column justify-content-center align-items-start" style="width: 50%;">
+                <!--TODO: load gif from assets-->
+                <%= image_tag 'Book.gif', alt: 'books', class: 'align-self-center', style: 'width: 200px; height:auto;' %>
+                <div class="d-flex flex-column align-self-center" style="width: 90%;">
+                    <h1 class="display-2 mb-3">Ryan's classic book store</h1>
+                    <h5 class="text-body-secondary" >Built using Ruby on Rails for the frontend and Golang/Gin API talking to a cloud hosted postgresql database for the backend!</h2>
+                    <h5 class="lead">
+                        While this implementation is over-complicated and the rails app could talk to the postgres database directly, it was built to showcase the 
+                        use of Golang/Gin on the backend and how to implement a RESTful API!
+                    </h5>
+                </div>
+                
+            </div>
+            <div class="d-flex flex-column justify-content-center align-items-center pt-5" style="width: 50%;">
+                <div class="card shadow rounded border-0 p-5">
+                    <div class="card-body">
+                        <h5 >Login to purchase books</h5>
+                        <div id="login">
+                            <%= form_tag '/login' do %>
+                                <%= text_field_tag :username, nil, placeholder: 'Username', class: 'form-control mb-1' %>
+                                <%= password_field_tag :password, nil, placeholder:'Password', class: 'form-control mb-3' %>
+                            <%= submit_tag 'Login', class: 'btn btn-outline-primary w-100' %>
+                            <% end %>
+                            <span style="color: red;"><%= $loginerror %></span>
+                        </div>
+                        <div class="text-center mt-5 mb-5">
+                            <h6 class="text-secondary">OR</h6>
+                        </div>
+                        <h5>Don't have an account? Sign up!</h5>
+                        <div id="signup">
+                            <%= form_tag '/signup' do %>
+                                <%= text_field_tag :username, nil, placeholder: 'Username', class: 'form-control mb-1' %>
+                                <%= password_field_tag :password, nil, placeholder: 'Password', class: 'form-control mb-3' %>
+                            <%= submit_tag 'Signup', class: 'btn btn-outline-primary w-100' %>
+                            <% end %>
+                            <span style="color: red;"><%= $signuperror %></span>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    <% end %>
 
-<% if $access_token != nil %>
-    <h2>Welcome, <%= $username %></h2>
-    <!--TODO: add logout button-->
-    <%= button_to 'Logout', '/logout', method: :get %>
-    <span style="color: red;"><%= $logouterror %></span>
-    <%= button_to 'Delete Account', '/deleteaccount', method: :delete %>
-    <span style="color: red;"><%= $deleteaccounterror %></span>
+    <% if $access_token != nil %>
+        <div class="d-flex flex-row justify-content-center align-items-stretch" style="height: 100vh">
+            <div class="d-flex flex-column justify-content-start align-items-start" style="width: 50%;height:100vh; overflow-y:hidden">
+                <div class="p-3 w-100">
+                    <h2>Welcome, <%= $username %></h2>
+                    <div class="d-flex flex-row">
+                        <%= button_to 'Logout', '/logout', method: :get, style: 'background:none; border:none', class: 'link-primary link-offset-2 link-underline-opacity-0' %>
+                        <%= button_to 'Delete Account', '/deleteaccount', method: :delete, style: 'background:none; border:none', class: 'link-danger link-offset-2 link-underline-opacity-0' %>
+                    </div>
+                    <span style="color: red;"><%= $logouterror %></span>
+                    <span style="color: red;"><%= $deleteaccounterror %></span>
+                </div>
 
-    <h3>You currently have $<%= $usercash %> available to spend!</h3>
-    <h4>Add more cash to your account</h4>
-    <%= button_to 'Add Cash ($5)', '/addcash', method: :post, params: { cash: 5 } %>
-    <%= button_to 'Add Cash ($10)', '/addcash', method: :post, params: { cash: 10 } %>
-    <%= button_to 'Add Cash ($20)', '/addcash', method: :post, params: { cash: 20 } %>
+                <div class="flex-grow-1 w-100 overflow-y-auto p-3">
 
-    <h3>Your currently purchased books</h3>
-    <span style="color: red;"><%= $returnbookerror %></span>
-    <div id="books">
-        <ul>
-            <% $userbooks.each do |book| %>
-                <li><%= book['Bookname'] %> by <%= book['Authorname'] %></li>
-                <%= button_to 'Return', '/returnbook', method: :post, params: { id: book['Pkbookid'] } %>
-            <% end %>
-        </ul>
-    </div>
+                    <div class="card border-0 m-3 bg-transparent">
+                        <div class="card-title mb-0 text-center">
+                            <h3 class="lead">Your cash</h3>
+                        </div>
+                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                            <h2 class="display-3 text-success">$<%= $usercash %></h2>                  
+                        </div>
+                        <div class="card-footer bg-transparent border-0">
+                            <div class="d-flex flex-row align-items-center justify-content-center">
+                                <p class="mb-0">Add cash: </p>
+                                <%= button_to '$5', '/addcash', method: :post, params: { cash: 5 }, class: 'mx-1 btn btn-sm btn-success' %>
+                                <%= button_to '$10', '/addcash', method: :post, params: { cash: 10 }, class: 'mx-1 btn btn-sm btn-success' %>
+                                <%= button_to '$20', '/addcash', method: :post, params: { cash: 20 }, class: 'mx-1 btn btn-sm btn-success' %>
+                            </div>
+                        </div>
+                    </div>
 
-    <h3>Books available for purchase</h3>
-    <span style="color: red;"><%= $purchasebookerror %></span>
-    <div id="books">
-        <ul>
-            <% $books.each do |book| %>
-                <li><%= book['Bookname'] %></li>
-                <li><%= book['Authorname'] %></li>
-                <li><%= book['Price'] %></li>
-                <li><%= button_to 'Purchase', '/purchasebook', method: :post, params: { id: book['Pkbookid'] } %></li>
-            <% end %>
-        </ul>
-    </div>
-<% end %>
+                    <div class="card shadow rounded border-0 p-5">
+                        <div class="card-title">
+                            <h3 class="lead">Your library</h3>
+                        </div>
+                        <div class="card-body">                      
+                            <span style="color: red;"><%= $returnbookerror %></span>
+                            <div id="userbooks">
+                                <div class="d-flex flex-column justify-content-between">
+                                    <% $userbooks.each do |book| %>
+                                        <div class="d-flex flex-row justify-content-between py-3">
+                                            <div class="d-flex flex-column px-3">
+                                                <p style="margin-bottom: 0.15rem;"><%= book['Bookname'] %></p>
+                                                <p class="text-secondary" style="margin-bottom: 0rem;">by <%= book['Authorname'] %></p>
+                                            </div>
+                                            <div class="d-flex flex-column align-items-center justify-content-center px-3">
+                                                <%= button_to 'Return', '/returnbook', method: :post, params: { id: book['Pkbookid'] }, class: 'btn btn-outline-info' %>
+                                            </div>
+                                        </div>
+                                    <% end %>
+                                    <% if $userbooks == nil || $userbooks.empty? %>
+                                        <p class="text-center text-secondary lead">You don't have any books in your library yet!</p>
+                                    <% end %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+            <div class="d-flex flex-column justify-content-center align-items-center pt-5" style="width: 50%;">
+                <div class="card shadow rounded border-0 p-5">
+                    <div class="card-title">
+                        <h3 class="lead">Books available for purchase</h3>
+                    </div>
+                    <div class="card-body">
+                        
+                        <span style="color: red;"><%= $purchasebookerror %></span>
+                        <div id="books">
+                            <div class="d-flex flex-column justify-content-between">
+                                <% $books.each do |book| %>
+                                    <div class="d-flex flex-row justify-content-between py-3">
+                                        <span class="mr-5 text-success d-flex align-items-center justify-content-center px-3">$<%= book['Price'] %></span>
+                                        <div class="d-flex flex-column px-3">
+                                            <p style="margin-bottom: 0.15rem;"><%= book['Bookname'] %></p>
+                                            <p class="text-secondary" style="margin-bottom: 0rem;">by <%= book['Authorname'] %></p>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center justify-content-center px-3">
+                                            <%= button_to 'Purchase', '/purchasebook', method: :post, params: { id: book['Pkbookid'] }, class: 'btn btn-outline-info' %>
+                                        </div>
+                                    </div>
+                                <% end %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% end %>
+</div>

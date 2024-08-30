@@ -56,6 +56,7 @@ class HomeController < ApplicationController
     if response.code == 200
       $access_token = response['accesstoken']
       $userbooks = HTTParty.get('https://ryans-bookstore.fly.dev/user/books', headers: { 'Access-Token' => $access_token })
+      puts $userbooks
       response = HTTParty.get('https://ryans-bookstore.fly.dev/user/getcash', headers: { 'Access-Token' => $access_token })
       $usercash = response['cash']
       $username = @username
@@ -116,9 +117,7 @@ class HomeController < ApplicationController
   def purchasebook
 
     @book_id = params[:id]
-    puts @book_id
     response = HTTParty.post('https://ryans-bookstore.fly.dev/user/addbook?bookId=' + @book_id, headers: { 'Access-Token' => $access_token })
-    puts response
     if response.code == 200
       #call userbooks endpoint to get the updated list of books
       $userbooks = HTTParty.get('https://ryans-bookstore.fly.dev/user/books', headers: { 'Access-Token' => $access_token })
@@ -128,7 +127,6 @@ class HomeController < ApplicationController
       redirect_to '/home'
     else
       msg = response['message']
-      puts msg
       if msg == "Insufficient funds"
         $purchasebookerror = "You don't have enough cash to purchase this book. Please add more cash to your account."
       elsif msg == "User already owns the book"
@@ -136,7 +134,6 @@ class HomeController < ApplicationController
       else
         $purchasebookerror = "Something went wrong when trying to purchase the book. Please try again."
       end
-      puts $purchasebookerror
       redirect_to '/home'
     end
 
