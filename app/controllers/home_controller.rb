@@ -19,39 +19,39 @@ class HomeController < ApplicationController
   end
 
   def signup
-    @username = params[:username]
-    @password = params[:password]
+    username = params[:username]
+    password = params[:password]
 
     #check if username or password arent just whitespace or empty
-    if @username == nil || @password == nil || @username.strip.empty? || @password.strip.empty?
+    if username == nil || password == nil || username.strip.empty? || password.strip.empty?
       $signuperror = "Please enter a valid username and password"
       #return
       return redirect_to '/home'
     end
 
-    response = HTTParty.post('https://ryans-bookstore.fly.dev/auth/createuser?username=' + @username + '&password=' + @password)
+    response = HTTParty.post('https://ryans-bookstore.fly.dev/auth/createuser?username=' + username + '&password=' + password)
 
     if response.code == 200
       $access_token = response['accesstoken']
       $userbooks = HTTParty.get('https://ryans-bookstore.fly.dev/user/books', headers: { 'Access-Token' => $access_token })
       response = HTTParty.get('https://ryans-bookstore.fly.dev/user/getcash', headers: { 'Access-Token' => $access_token })
       $usercash = response['cash']
-      $username = @username
+      $username = username
       $books = HTTParty.get('https://ryans-bookstore.fly.dev/bookstore/books')
       $signuperror = nil
       redirect_to '/home'
     else
-      @msg = response['message']
-      $signuperror = @msg == "User already exists" ? "Username already taken" : "Something went wrong when trying to sign up. Please try again."
+      msg = response['message']
+      $signuperror = msg == "User already exists" ? "Username already taken" : "Something went wrong when trying to sign up. Please try again."
       redirect_to '/home'
     end
   end
 
   def login
-    @username = params[:username]
-    @password = params[:password]
+    username = params[:username]
+    password = params[:password]
 
-    response = HTTParty.post('https://ryans-bookstore.fly.dev/auth/loginuser?username=' + @username + '&password=' + @password)
+    response = HTTParty.post('https://ryans-bookstore.fly.dev/auth/loginuser?username=' + username + '&password=' + password)
 
     if response.code == 200
       $access_token = response['accesstoken']
@@ -59,7 +59,7 @@ class HomeController < ApplicationController
       puts $userbooks
       response = HTTParty.get('https://ryans-bookstore.fly.dev/user/getcash', headers: { 'Access-Token' => $access_token })
       $usercash = response['cash']
-      $username = @username
+      $username = username
       $books = HTTParty.get('https://ryans-bookstore.fly.dev/bookstore/books')
       redirect_to '/home'
     else
@@ -105,8 +105,8 @@ class HomeController < ApplicationController
   end
 
   def addcash
-    @cash = params[:cash]
-    response = HTTParty.post('https://ryans-bookstore.fly.dev/user/addcash?cashamount=' + @cash, headers: { 'Access-Token' => $access_token })
+    cash = params[:cash]
+    response = HTTParty.post('https://ryans-bookstore.fly.dev/user/addcash?cashamount=' + cash, headers: { 'Access-Token' => $access_token })
     if response.code == 200
       response = HTTParty.get('https://ryans-bookstore.fly.dev/user/getcash', headers: { 'Access-Token' => $access_token })
       $usercash = response['cash']
@@ -116,8 +116,8 @@ class HomeController < ApplicationController
 
   def purchasebook
 
-    @book_id = params[:id]
-    response = HTTParty.post('https://ryans-bookstore.fly.dev/user/addbook?bookId=' + @book_id, headers: { 'Access-Token' => $access_token })
+    book_id = params[:id]
+    response = HTTParty.post('https://ryans-bookstore.fly.dev/user/addbook?bookId=' + book_id, headers: { 'Access-Token' => $access_token })
     if response.code == 200
       #call userbooks endpoint to get the updated list of books
       $userbooks = HTTParty.get('https://ryans-bookstore.fly.dev/user/books', headers: { 'Access-Token' => $access_token })
@@ -140,8 +140,8 @@ class HomeController < ApplicationController
   end
 
   def returnbook
-    @book_id = params[:id]
-    response = HTTParty.delete('https://ryans-bookstore.fly.dev/user/returnbook?bookId=' + @book_id, headers: { 'Access-Token' => $access_token })
+    book_id = params[:id]
+    response = HTTParty.delete('https://ryans-bookstore.fly.dev/user/returnbook?bookId=' + book_id, headers: { 'Access-Token' => $access_token })
     if response.code == 200
       $userbooks = HTTParty.get('https://ryans-bookstore.fly.dev/user/books', headers: { 'Access-Token' => $access_token })
       response = HTTParty.get('https://ryans-bookstore.fly.dev/user/getcash', headers: { 'Access-Token' => $access_token })
